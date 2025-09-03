@@ -14,12 +14,9 @@ if [[ "$WRT_ONLY_CONFIG" == 'false' && "$WRT_MODE" == 'PACKAGE' ]]; then
 
   echo "----------------"
 
-  "$ParseZeroWrtPackageApp" "$GITHUB_WORKSPACE/$WRT_DIR/bin" "$GITHUB_WORKSPACE/Config/CompilePackage" "$outputPath"
-
-  echo "----------------"
-
-  test=$("$ParseZeroWrtPackageApp" "$GITHUB_WORKSPACE/$WRT_DIR/bin" "$GITHUB_WORKSPACE/Config/CompilePackage" "$outputPath")
-  echo "$test"
+  "$ParseZeroWrtPackageApp" --dataPath "$GITHUB_WORKSPACE/$WRT_DIR/bin" \
+    --configPath "$GITHUB_WORKSPACE/Config/CompilePackage" \
+    --outputPath "$outputPath"
 
   echo "----------------"
 
