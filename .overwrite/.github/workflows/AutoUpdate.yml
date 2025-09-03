@@ -1,0 +1,95 @@
+# 项目 zero-dream/ZeroWrt-Package-CI 专用
+
+# CI 项目
+name: AutoUpdate
+
+# CI 权限
+permissions: write-all
+
+# CI 计划
+on:
+  # 自动运行: 每天早上 3 点
+  schedule:
+    - cron: 0 19 * * *
+  # 手动运行
+  workflow_dispatch:
+    inputs:
+      COMMIT:
+        description: 'Commit Message'
+        required: false
+        type: string
+        default: ''
+
+# CI 环境
+env:
+  # GITHUB ENV
+  GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
+  # WRT ENV
+  WRT_COMMIT: ${{inputs.COMMIT}}
+
+# CI 任务
+jobs:
+  auto_update:
+    name: AutoUpdate
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Project
+        uses: actions/checkout@main
+        with:
+          token: ${{secrets.WORKFLOW_TOKEN}}
+
+      - name: Initialize Project
+        run: |
+          chmod +x "$ZD_LibraryPath/Script/InitProject.sh"
+          source "$ZD_LibraryPath/Script/InitProject.sh"
+
+      - name: Setup Git Config
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: Clone Code
+        run: |
+          git clone https://github.com/zero-dream/ZeroWrt-Firmware-CI.git "$ZD_TempPath/ZeroWrt-Firmware-CI/"
+
+      - name: Merge Code
+        run: |
+          # 处理 .github/workflows 文件夹
+          declare -A keepFiles=(
+            ['CleanCache.yml']=1
+            ['TestZeroWrt.yml']=1
+            ['ZeroWrtCore.yml']=1
+          )
+          cd "$ZD_TempPath/ZeroWrt-Firmware-CI/.github/workflows/"
+          for keepFile in *; do
+            if [[ -f "$keepFile" ]]; then
+              if [[ -z "${keepFiles[$keepFile]}" ]]; then
+                rm -f "$keepFile"
+              fi
+            fi
+          done
+          cd "$ZD_TempPath/ZeroWrt-Firmware-CI/"
+          # 处理 .git 文件夹
+          rm -rf "$ZD_TempPath/ZeroWrt-Firmware-CI/.git/"
+          cp -r "$GITHUB_WORKSPACE/.git/" "$ZD_TempPath/ZeroWrt-Firmware-CI/"
+          # 处理 .overwrite 文件夹
+          cp -r "$GITHUB_WORKSPACE/.overwrite/" "$ZD_TempPath/ZeroWrt-Firmware-CI/"
+          cp -r "$GITHUB_WORKSPACE"/.overwrite/* "$ZD_TempPath/ZeroWrt-Firmware-CI/"
+          cp -r "$GITHUB_WORKSPACE"/.overwrite/.* "$ZD_TempPath/ZeroWrt-Firmware-CI/"
+          # 更新代码
+          find "$GITHUB_WORKSPACE/" -mindepth 1 -delete
+          cp -r "$ZD_TempPath"/ZeroWrt-Firmware-CI/* "$GITHUB_WORKSPACE/"
+          cp -r "$ZD_TempPath"/ZeroWrt-Firmware-CI/.* "$GITHUB_WORKSPACE/"
+
+      - name: Commit And Push Change
+        run: |
+          cd "$GITHUB_WORKSPACE/"
+          git add "$GITHUB_WORKSPACE/"
+          # 检查是否有文件变更
+          if git diff-index HEAD --quiet --; then
+            echo "No changes to commit."
+          else
+            [[ -z "$WRT_COMMIT" ]] && message="AutoUpdate [$ZD_DATE]" || message="AutoUpdate [$WRT_COMMIT]"
+            git commit -m "$message"
+            git push origin HEAD:${{github.ref}}
+          fi
