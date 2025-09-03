@@ -12,7 +12,13 @@ if [[ "$WRT_ONLY_CONFIG" == 'false' && "$WRT_MODE" == 'PACKAGE' ]]; then
   # ParseZeroWrtPackage
   outputPath="$GITHUB_WORKSPACE/.output/ParseZeroWrtPackage"
 
+echo "----------------"
+
+echo "$ZeroDream_Secret"
+
   echo "----------------"
+
+  export ZeroDream_Secret="$ZeroDream_Secret"
 
   "$ParseZeroWrtPackageApp" --dataPath "$GITHUB_WORKSPACE/$WRT_DIR/bin" \
     --configPath "$GITHUB_WORKSPACE/Config/CompilePackage" \
