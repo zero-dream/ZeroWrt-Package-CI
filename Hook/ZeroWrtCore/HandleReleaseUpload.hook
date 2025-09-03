@@ -1,0 +1,48 @@
+#!/bin/bash
+# Copyright (C) 2000 ZeroDream
+
+# --------------------------------------------------
+
+# ParseZeroWrtPackageApp
+ParseZeroWrtPackageApp="$ZD_LibraryPath/Application/ParseZeroWrtPackage-linux-amd64"
+chmod +x "$ParseZeroWrtPackageApp"
+
+# CollectRelease
+if [[ "$WRT_ONLY_CONFIG" == 'false' && "$WRT_MODE" == 'FIRMWARE' ]]; then
+  # ParseZeroWrtPackage
+  outputPath="$GITHUB_WORKSPACE/.output/ParseZeroWrtPackage"
+  "$ParseZeroWrtPackageApp" "$GITHUB_WORKSPACE/$WRT_DIR/bin" "$GITHUB_WORKSPACE/Config/CompilePackage" "$outputPath"
+  # 整理上传的文件
+  cd "$outputPath"
+  for packageName in *; do
+    [[ -e "$packageName" ]] || continue # 跳过空的匹配
+    archiveName="$ZD_ReleaseUploadPath/$packageName.tar.gz"
+    tar -czf "$archiveName" "$packageName"
+  done
+fi
+
+# 使用 GitHub CLI 创建 Release
+tag="ZeroWrt-Package-$WRT_CONFIG-$ZD_DATE"
+notes=$(cat <<- EOF
+Package download for ZeroWrt (Immortalwrt) firmware
+
+仅适用于 ZeroWrt-$WRT_CONFIG 固件
+
+源码: $WRT_REPO
+分支: $WRT_BRANCH
+提交: $WRT_HASH
+
+配置: $WRT_CONFIG
+平台: $WRT_TARGET
+内核: $WRT_KVER
+EOF
+)
+files=("$ZD_ReleaseUploadPath"/*.*)
+gh release create "$tag" \
+  --title "$tag" \
+  --notes "$notes" \
+  "${files[@]}"
+
+# --------------------------------------------------
+
+exit 1 # 退出当前 step 的后续运行
