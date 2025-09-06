@@ -1,0 +1,24 @@
+#!/bin/bash
+# Copyright (C) 2000 ZeroDream
+
+# --------------------------------------------------
+
+body=$(cat <<- EOF
+Package download for ZeroWrt (Immortalwrt) firmware
+
+仅适用于 ZeroWrt-$WRT_CONFIG 固件
+
+源码: $WRT_REPO
+分支: $WRT_BRANCH
+提交: $WRT_HASH
+
+配置: $WRT_CONFIG
+平台: $WRT_TARGET
+内核: $WRT_KVER
+EOF
+)
+echo "WRT_UploadReleaseBody=$body" >> $GITHUB_ENV
+
+# --------------------------------------------------
+
+return 0

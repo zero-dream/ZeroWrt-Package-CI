@@ -1,0 +1,10 @@
+#!/bin/bash
+# Copyright (C) 2000 ZeroDream
+
+# --------------------------------------------------
+
+cat "$GITHUB_WORKSPACE/Config/CompilePackage" >>$WRT_ConfigPath
+
+# --------------------------------------------------
+
+exit 0

@@ -1,0 +1,23 @@
+#!/bin/bash
+# Copyright (C) 2000 ZeroDream
+
+# --------------------------------------------------
+
+[[ "$WRT_ONLY_CONFIG" == 'true' ]] && exit 0
+
+# --------------------------------------------------
+
+cd "$GITHUB_WORKSPACE/$WRT_DIR/"
+
+outputPath="$ZD_TempPath/ParseZeroWrtPackage"
+[[ -d "$outputPath" ]] || exit 2 # 若路径不存在则终止 Jobs
+cd "$outputPath"
+for packageName in *; do
+  [[ -e "$packageName" ]] || continue # 跳过空的匹配
+  archiveName="$ZD_ReleaseUploadPath/$packageName.tar.gz"
+  tar -czf "$archiveName" "$packageName"
+done
+
+# --------------------------------------------------
+
+exit 0

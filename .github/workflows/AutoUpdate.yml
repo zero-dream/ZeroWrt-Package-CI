@@ -1,5 +1,3 @@
-# 项目 zero-dream/ZeroWrt-Package-CI 专用
-
 # CI 项目
 name: AutoUpdate
 
@@ -30,7 +28,7 @@ env:
 # CI 任务
 jobs:
   auto_update:
-    name: AutoUpdate
+    name: ZeroDreamCI
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Project
@@ -38,58 +36,31 @@ jobs:
         with:
           token: ${{secrets.WORKFLOW_TOKEN}}
 
-      - name: Initialize Project
+      - name: InitZeroDreamCI
         run: |
-          chmod +x "$GITHUB_WORKSPACE/Library/Script/InitProject.sh"
-          source "$GITHUB_WORKSPACE/Library/Script/InitProject.sh"
+          ZeroDreamCiPath="$RUNNER_TEMP/ZeroDreamCI-$(uuidgen | tr -d '-')"
+          git clone --depth=1 https://github.com/zero-dream/ZeroDream-CI.git "$ZeroDreamCiPath/"
+          chmod +x "$ZeroDreamCiPath/ZeroDream/Main/Main.sh"
+          # mergeArr=('zero-dream/repositories')
+          source "$ZeroDreamCiPath/ZeroDream/Main/Main.sh" "$mergeArr"
 
-      - name: Setup Git Config
+      - name: AutoUpdate
         run: |
-          git config --global user.name "github-actions[bot]"
-          git config --global user.email "github-actions[bot]@users.noreply.github.com"
-
-      - name: Clone Code
-        run: |
-          git clone https://github.com/zero-dream/ZeroWrt-Firmware-CI.git "$ZD_TempPath/ZeroWrt-Firmware-CI/"
-
-      - name: Merge Code
-        run: |
-          # 处理 .github/workflows 文件夹
-          declare -A keepFiles=(
-            ['CleanCache.yml']=1
-            ['TestZeroWrt.yml']=1
-            ['ZeroWrtCore.yml']=1
-          )
-          cd "$ZD_TempPath/ZeroWrt-Firmware-CI/.github/workflows/"
-          for keepFile in *; do
-            if [[ -f "$keepFile" ]]; then
-              if [[ -z "${keepFiles[$keepFile]}" ]]; then
-                rm -f "$keepFile"
-              fi
-            fi
+          # Source
+          source "$ZD_ScriptLibPath/CreateTempPath.sh"
+          source "$ZD_ScriptLibPath/GitPush.sh"
+          # GitClone
+          autoUpdatePath=$(createTempPath 'AutoUpdate')
+          git clone --depth=1 https://github.com/$GITHUB_REPOSITORY.git "$autoUpdatePath/"
+          firmwareCiPath=$(createTempPath 'ZeroWrtFirmwareCI')
+          git clone --depth=1 https://github.com/zero-dream/ZeroWrt-Firmware-CI.git "$firmwareCiPath/"
+          # CopyFile
+          fileArr=('CleanCache' 'CompileZeroWrt' 'TestZeroWrt' 'ZeroWrtCore')
+          for fileName in "${fileArr[@]}"; do
+            cp -r "$firmwareCiPath/$fileName.yml" "$autoUpdatePath/"
           done
-          cd "$ZD_TempPath/ZeroWrt-Firmware-CI/"
-          # 处理 .git 文件夹
-          rm -rf "$ZD_TempPath/ZeroWrt-Firmware-CI/.git/"
-          cp -r "$GITHUB_WORKSPACE/.git/" "$ZD_TempPath/ZeroWrt-Firmware-CI/"
-          # 处理 .overwrite 文件夹
-          cp -r "$GITHUB_WORKSPACE/.overwrite/" "$ZD_TempPath/ZeroWrt-Firmware-CI/"
-          cp -r "$GITHUB_WORKSPACE"/.overwrite/* "$ZD_TempPath/ZeroWrt-Firmware-CI/"
-          cp -r "$GITHUB_WORKSPACE"/.overwrite/.* "$ZD_TempPath/ZeroWrt-Firmware-CI/"
-          # 更新代码
-          find "$GITHUB_WORKSPACE/" -mindepth 1 -delete
-          cp -r "$ZD_TempPath"/ZeroWrt-Firmware-CI/* "$GITHUB_WORKSPACE/"
-          cp -r "$ZD_TempPath"/ZeroWrt-Firmware-CI/.* "$GITHUB_WORKSPACE/"
-
-      - name: Commit And Push Change
-        run: |
-          cd "$GITHUB_WORKSPACE/"
-          git add "$GITHUB_WORKSPACE/"
-          # 检查是否有文件变更
-          if git diff-index HEAD --quiet --; then
-            echo "No changes to commit."
-          else
-            [[ -z "$WRT_COMMIT" ]] && message="AutoUpdate [$ZD_DATE]" || message="AutoUpdate [$WRT_COMMIT]"
-            git commit -m "$message"
-            git push origin HEAD:${{github.ref}}
-          fi
+          # PushFile
+          gitPush "${{github.ref}}" "$autoUpdatePath" ""
+          # DeleteRepo
+          rm -rf "$autoUpdatePath/"
+          rm -rf "$firmwareCiPath/"
