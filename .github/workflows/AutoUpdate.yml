@@ -61,7 +61,7 @@ jobs:
           for fileName in "${copyWorkflowArr[@]}"; do
             cp -a "$firmwareCiPath/.github/workflows/$fileName.yml" "$autoUpdatePath/"
           done
-          rm -rf "$GITHUB_WORKSPACE/"
+          find "$GITHUB_WORKSPACE/" -mindepth 1 -delete
           cp -a "$autoUpdatePath/." "$GITHUB_WORKSPACE/"
           # PushFile
           gitPush "${{github.ref}}" "$CI_COMMIT"
