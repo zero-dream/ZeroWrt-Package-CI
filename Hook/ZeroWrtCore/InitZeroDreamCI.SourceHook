@@ -3,9 +3,9 @@
 
 # --------------------------------------------------
 
-# ZeroWrt Environment
-
-echo "WRT_MODE=Package" >>$GITHUB_ENV # ??? Firmware|Package
+source "$ZD_ScriptLibPath/MergeRepo.sh"
+mergeArr=('zero-dream/ZeroWrt-Firmware-CI')
+mergeRepo 'mergeArr'
 
 # --------------------------------------------------
 

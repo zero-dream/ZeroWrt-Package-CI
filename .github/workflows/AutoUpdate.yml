@@ -31,7 +31,7 @@ jobs:
     name: ZeroDreamCI
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout Project
+      - name: CheckoutProject
         uses: actions/checkout@main
         with:
           token: ${{secrets.WORKFLOW_TOKEN}}
@@ -40,9 +40,11 @@ jobs:
         run: |
           ZeroDreamCiPath="$RUNNER_TEMP/ZeroDreamCI-$(uuidgen | tr -d '-')"
           git clone --depth=1 https://github.com/zero-dream/ZeroDream-CI.git "$ZeroDreamCiPath/"
-          chmod +x "$ZeroDreamCiPath/ZeroDream/Main/Main.sh"
-          # mergeArr=('zero-dream/repositories')
-          source "$ZeroDreamCiPath/ZeroDream/Main/Main.sh" "$mergeArr"
+          chmod +x "$ZeroDreamCiPath/ZeroDream/Main/Init.sh"
+          source "$ZeroDreamCiPath/ZeroDream/Main/Init.sh"
+          # --------------------------------------------------
+          source "$ZD_ScriptLibPath/Hook.sh"
+          sourceHook 'ZeroWrtCore/InitZeroDreamCI'
 
       - name: AutoUpdate
         run: |
