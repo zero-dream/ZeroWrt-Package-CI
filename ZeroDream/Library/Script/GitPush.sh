@@ -14,6 +14,7 @@ function gitPush() {
   git config --global user.name "github-actions[bot]"
   git config --global user.email "github-actions[bot]@users.noreply.github.com"
   # Check if the file has been modified
+  cd "$addPath"
   git add "$addPath"
   if git diff-index HEAD --quiet --; then
     echo "No changes to commit"
@@ -22,4 +23,5 @@ function gitPush() {
     git commit -m "$commitMessage"
     git push origin HEAD:$githubRef
   fi
+  echo "GitAdd: $addPath"
 }

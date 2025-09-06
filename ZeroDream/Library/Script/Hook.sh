@@ -13,9 +13,9 @@ function hook() {
   local scriptPath=$1
   # Hook
   echo '--------------------------------------------------'
-  echo "Hook: $ZD_HookPathSet/$scriptPath.hook"
   bash "$ZD_HookPathSet/$scriptPath.hook"
   local state=$?
+  echo "Hook: $ZD_HookPathSet/$scriptPath.hook"
   echo "State: $state"
   echo '--------------------------------------------------'
   (($state == 1)) && exit 0
