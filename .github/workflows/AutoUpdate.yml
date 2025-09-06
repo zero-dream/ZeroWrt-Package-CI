@@ -41,7 +41,7 @@ jobs:
           ZeroDreamCiPath="$RUNNER_TEMP/ZeroDreamCI-$(uuidgen | tr -d '-')"
           git clone --depth=1 https://github.com/zero-dream/ZeroDream-CI.git "$ZeroDreamCiPath/"
           chmod +x "$ZeroDreamCiPath/ZeroDream/Main/Init.sh"
-          bash "$ZeroDreamCiPath/ZeroDream/Main/Init.sh"
+          source "$ZeroDreamCiPath/ZeroDream/Main/Init.sh"
           # --------------------------------------------------
           source "$ZD_ScriptLibPath/Hook.sh"
           hook 'AutoUpdate/InitZeroDreamCI'
