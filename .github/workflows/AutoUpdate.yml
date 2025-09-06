@@ -43,17 +43,12 @@ jobs:
           chmod +x "$ZeroDreamCiPath/ZeroDream/Main/Init.sh"
           bash "$ZeroDreamCiPath/ZeroDream/Main/Init.sh"
           # --------------------------------------------------
-          # source "$ZD_ScriptLibPath/Hook.sh"
-          # bashHook 'ZeroWrtCore/InitZeroDreamCI'
+          source "$ZD_ScriptLibPath/Hook.sh"
+          hook 'AutoUpdate/InitZeroDreamCI'
 
       - name: AutoUpdate
         run: |
           # Source
-          echo '------------'
-          echo "ZD_Testbfbfbf: $ZD_Testbfbfbf"
-          echo '------------'
-          exit 1
-
           source "$ZD_ScriptLibPath/CreateTempPath.sh"
           source "$ZD_ScriptLibPath/GitPush.sh"
           # GitClone
