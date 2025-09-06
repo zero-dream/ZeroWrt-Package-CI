@@ -16,7 +16,7 @@ on:
 
 # CI 任务
 jobs:
-  auto_clean:
+  auto-clean:
     name: AutoClean
     runs-on: ubuntu-latest
     steps:

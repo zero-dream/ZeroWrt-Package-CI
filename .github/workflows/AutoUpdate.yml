@@ -27,7 +27,7 @@ env:
 
 # CI 任务
 jobs:
-  auto_update:
+  auto-update:
     name: ZeroDreamCI
     runs-on: ubuntu-latest
     steps:
@@ -59,7 +59,7 @@ jobs:
           # CopyFile
           copyWorkflowArr=('CleanCache' 'CompileZeroWrt' 'TestZeroWrt' 'ZeroWrtCore')
           for fileName in "${copyWorkflowArr[@]}"; do
-            cp -a "$firmwareCiPath/.github/workflows/$fileName.yml" "$autoUpdatePath/"
+            cp -r "$firmwareCiPath/.github/workflows/$fileName.yml" "$autoUpdatePath/"
           done
           # PushFile
           gitPush "${{github.ref}}" "$autoUpdatePath" ""
