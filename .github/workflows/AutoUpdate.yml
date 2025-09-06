@@ -56,11 +56,15 @@ jobs:
           git clone --depth=1 https://github.com/$GITHUB_REPOSITORY.git "$autoUpdatePath/"
           firmwareCiPath=$(createTempPath 'ZeroWrtFirmwareCI')
           git clone --depth=1 https://github.com/zero-dream/ZeroWrt-Firmware-CI.git "$firmwareCiPath/"
-          # CopyFile
+          # CopyFileArr
           copyWorkflowArr=('CleanCache' 'CompileZeroWrt' 'TestZeroWrt' 'ZeroWrtCore')
           for fileName in "${copyWorkflowArr[@]}"; do
             cp -a "$firmwareCiPath/.github/workflows/$fileName.yml" "$autoUpdatePath/"
           done
+          # CopyGitDir
+          rm -rf "$autoUpdatePath/.git"
+          cp -a "$GITHUB_WORKSPACE/.git/" "$autoUpdatePath/"
+          # MergeRepo
           find "$GITHUB_WORKSPACE/" -mindepth 1 -delete
           cp -a "$autoUpdatePath/." "$GITHUB_WORKSPACE/"
           # PushFile
