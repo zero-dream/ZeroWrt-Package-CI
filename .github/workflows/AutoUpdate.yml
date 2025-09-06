@@ -22,8 +22,8 @@ on:
 env:
   # GITHUB ENV
   GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
-  # WRT ENV
-  WRT_COMMIT: ${{inputs.COMMIT}}
+  # CI ENV
+  CI_COMMIT: ${{inputs.COMMIT}}
 
 # CI 任务
 jobs:
@@ -52,17 +52,19 @@ jobs:
           source "$ZD_ScriptLibPath/CreateTempPath.sh"
           source "$ZD_ScriptLibPath/GitPush.sh"
           # GitClone
-          autoUpdatePath="$GITHUB_WORKSPACE/.temp/AutoUpdate-$(uuidgen | tr -d '-')"
+          autoUpdatePath=$(createTempPath 'AutoUpdate')
           git clone --depth=1 https://github.com/$GITHUB_REPOSITORY.git "$autoUpdatePath/"
           firmwareCiPath=$(createTempPath 'ZeroWrtFirmwareCI')
           git clone --depth=1 https://github.com/zero-dream/ZeroWrt-Firmware-CI.git "$firmwareCiPath/"
           # CopyFile
           copyWorkflowArr=('CleanCache' 'CompileZeroWrt' 'TestZeroWrt' 'ZeroWrtCore')
           for fileName in "${copyWorkflowArr[@]}"; do
-            cp -r "$firmwareCiPath/.github/workflows/$fileName.yml" "$autoUpdatePath/"
+            cp -a "$firmwareCiPath/.github/workflows/$fileName.yml" "$autoUpdatePath/"
           done
+          rm -rf "$GITHUB_WORKSPACE/"
+          cp -a "$autoUpdatePath/." "$GITHUB_WORKSPACE/"
           # PushFile
-          gitPush "${{github.ref}}" "$autoUpdatePath" ""
+          gitPush "${{github.ref}}" "$CI_COMMIT"
           # DeleteRepo
           rm -rf "$autoUpdatePath/"
           rm -rf "$firmwareCiPath/"
