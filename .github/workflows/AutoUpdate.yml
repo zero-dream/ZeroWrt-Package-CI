@@ -59,7 +59,7 @@ jobs:
           # CopyFileArr
           copyWorkflowArr=('CleanCache' 'CompileZeroWrt' 'TestZeroWrt' 'ZeroWrtCore')
           for fileName in "${copyWorkflowArr[@]}"; do
-            cp -a "$firmwareCiPath/.github/workflows/$fileName.yml" "$autoUpdatePath/"
+            cp -a "$firmwareCiPath/.github/workflows/$fileName.yml" "$autoUpdatePath/.github/workflows/"
           done
           # CopyGitDir
           rm -rf "$autoUpdatePath/.git"
