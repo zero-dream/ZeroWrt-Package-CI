@@ -52,7 +52,7 @@ jobs:
           source "$ZD_ScriptLibPath/CreateTempPath.sh"
           source "$ZD_ScriptLibPath/GitPush.sh"
           # GitClone
-          autoUpdatePath=$(createTempPath 'AutoUpdate')
+          autoUpdatePath="$GITHUB_WORKSPACE/.temp/AutoUpdate-$(uuidgen | tr -d '-')"
           git clone --depth=1 https://github.com/$GITHUB_REPOSITORY.git "$autoUpdatePath/"
           firmwareCiPath=$(createTempPath 'ZeroWrtFirmwareCI')
           git clone --depth=1 https://github.com/zero-dream/ZeroWrt-Firmware-CI.git "$firmwareCiPath/"
