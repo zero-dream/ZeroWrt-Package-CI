@@ -45,7 +45,6 @@ jobs:
           # --------------------------------------------------
           source "$ZD_ScriptLibPath/Hook.sh"
           hook 'AutoUpdate/InitZeroDreamCI'
-          echo "---- a001"
 
       - name: AutoUpdate
         run: |
@@ -58,9 +57,9 @@ jobs:
           firmwareCiPath=$(createTempPath 'ZeroWrtFirmwareCI')
           git clone --depth=1 https://github.com/zero-dream/ZeroWrt-Firmware-CI.git "$firmwareCiPath/"
           # CopyFile
-          fileArr=('CleanCache' 'CompileZeroWrt' 'TestZeroWrt' 'ZeroWrtCore')
-          for fileName in "${fileArr[@]}"; do
-            cp -r "$firmwareCiPath/$fileName.yml" "$autoUpdatePath/"
+          copyWorkflowArr=('CleanCache' 'CompileZeroWrt' 'TestZeroWrt' 'ZeroWrtCore')
+          for fileName in "${copyWorkflowArr[@]}"; do
+            cp -r "$firmwareCiPath/.github/workflows/$fileName.yml" "$autoUpdatePath/"
           done
           # PushFile
           gitPush "${{github.ref}}" "$autoUpdatePath" ""
