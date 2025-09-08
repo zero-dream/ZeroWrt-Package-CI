@@ -1,0 +1,34 @@
+# CI 项目
+name: CleanRelease
+
+# CI 权限
+permissions: write-all
+
+# CI 计划
+on:
+  # 自动运行: 当 CompileZeroWrt 完成后
+  workflow_run:
+    workflows: ["CompileZeroWrt"]
+    types:
+      - completed
+  # 手动运行
+  workflow_dispatch:
+
+# CI 任务
+jobs:
+  clean-release:
+    name: CleanRelease
+    runs-on: ubuntu-latest
+    steps:
+      - name: DeleteReleasesAndWorkflowsRun
+        if: ${{github.event.workflow_run.conclusion == 'success'}}
+        uses: ophub/delete-releases-workflows@main
+        with:
+          gh_token: ${{secrets.GITHUB_TOKEN}}
+          delete_tags: true
+          delete_releases: true
+          releases_keep_latest: 4
+          releases_keep_keyword: ''
+          delete_workflows: true
+          workflows_keep_day: 1
+          workflows_keep_keyword: ''
