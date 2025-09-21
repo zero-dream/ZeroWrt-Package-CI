@@ -1,0 +1,72 @@
+# CI 项目
+name: AutoUpdate
+
+# CI 权限
+permissions: write-all
+
+# CI 计划
+on:
+  # 自动运行: 每天早上 2 点
+  schedule:
+    - cron: 0 18 * * *
+  # 手动运行
+  workflow_dispatch:
+    inputs:
+      COMMIT:
+        description: 'Commit Message'
+        required: false
+        type: string
+        default: ''
+
+# CI 环境
+env:
+  # GITHUB ENV
+  GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
+  # CI ENV
+  CI_COMMIT: ${{inputs.COMMIT || ''}} # 为自动编译设置默认值
+
+# CI 任务
+jobs:
+  auto-update:
+    name: AutoUpdate
+    runs-on: ubuntu-latest
+    steps:
+      - name: CheckoutProject
+        uses: actions/checkout@main
+        with:
+          token: ${{secrets.WORKFLOW_TOKEN}}
+
+      - name: InitZeroDreamCI
+        run: |
+          ZeroDreamCiPath="$RUNNER_TEMP/ZeroDreamCI-$(uuidgen | tr -d '-')"
+          git clone --depth=1 https://github.com/zero-dream/ZeroDream-CI.git "$ZeroDreamCiPath/"
+          chmod +x "$ZeroDreamCiPath/zerodream/main/init.sh"
+          source "$ZeroDreamCiPath/zerodream/main/init.sh"
+          # --------------------------------------------------
+          source "$ZD_ScriptLibPath/hook.sh"
+          hook 'AutoUpdate/InitZeroDreamCI'
+
+      - name: UpdateRepo
+        run: |
+          # Source
+          source "$ZD_ScriptLibPath/gitPush.sh"
+          # GitClone
+          updateCiPath="$RUNNER_TEMP/AutoUpdate-$(uuidgen | tr -d '-')"
+          git clone --depth=1 https://github.com/$GITHUB_REPOSITORY.git "$updateCiPath/"
+          firmwareCiPath="$RUNNER_TEMP/ZeroWrtFirmwareCI-$(uuidgen | tr -d '-')"
+          git clone --depth=1 https://github.com/zero-dream/ZeroWrt-Firmware-CI.git "$firmwareCiPath/"
+          # HandleGitDir
+          rm -rf "$updateCiPath/.git/"
+          cp -a "$GITHUB_WORKSPACE/.git/" "$updateCiPath/"
+          # CopyWorkflowFile
+          cp -a "$updateCiPath/.github/workflows/." "$firmwareCiPath/.github/workflows/"
+          find "$updateCiPath/.github/workflows/" -mindepth 1 -delete
+          cp -a "$firmwareCiPath/.github/workflows/." "$updateCiPath/.github/workflows/"
+          # MergeRepo
+          find "$GITHUB_WORKSPACE/" -mindepth 1 -delete
+          cp -a "$updateCiPath/." "$GITHUB_WORKSPACE/"
+          # PushFile
+          gitPush "${{github.ref}}" "$CI_COMMIT"
+          # DeleteRepo
+          rm -rf "$updateCiPath/"
+          rm -rf "$firmwareCiPath/"
