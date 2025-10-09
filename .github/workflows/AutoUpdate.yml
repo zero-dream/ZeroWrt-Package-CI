@@ -1,3 +1,5 @@
+# 本项目私有文件
+
 # CI 项目
 name: AutoUpdate
 
@@ -59,7 +61,13 @@ jobs:
           rm -rf "$updateCiPath/.git/"
           cp -a "$GITHUB_WORKSPACE/.git/" "$updateCiPath/"
           # CopyWorkflowFile
-          cp -a "$updateCiPath/.github/workflows/." "$firmwareCiPath/.github/workflows/"
+          coverArr=(
+            'AutoUpdate'
+            'CleanRelease'
+          )
+          for cover in "${coverArr[@]}"; do
+            cp -a "$updateCiPath/.github/workflows/$cover.yml" "$firmwareCiPath/.github/workflows/"
+          done
           find "$updateCiPath/.github/workflows/" -mindepth 1 -delete
           cp -a "$firmwareCiPath/.github/workflows/." "$updateCiPath/.github/workflows/"
           # MergeRepo
