@@ -28,6 +28,7 @@ compressPath="$CI_PackagePath/CompressPackage" && mkdir -p "$compressPath"
 cd "$outputPath"
 for packageName in *; do
   [[ -e "$packageName" ]] || continue # 跳过空的匹配
+  cp -a "$CI_StoragePath/package-readme" "$outputPath/$packageName/README.txt"
   archiveName="$compressPath/$packageName.tar.gz"
   tar -czvf "$archiveName" -C "$outputPath" "$packageName"
 done
