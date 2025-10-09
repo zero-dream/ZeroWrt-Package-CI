@@ -111,7 +111,7 @@ jobs:
           source "$ZD_ScriptLibPath/setEnv.sh"
           source "$ZD_ScriptLibPath/createPath.sh"
           setEnv 'CI_Owner' "${GITHUB_REPOSITORY%%/*}"
-          setEnv 'CI_ConfigPath' "$(createTempPath 'ParseConfig:dir')"
+          setEnv 'CI_VirtualPath' "$(createTempPath 'ParseConfig:dir')"
           setEnv 'WRT_NAME' 'ZeroWrt'
           setEnv 'WRT_MARK' "$CI_Owner"
           setEnv 'WRT_INFO' "${WRT_SOURCE%%/*}"
