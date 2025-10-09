@@ -10,7 +10,7 @@ cd "$WRT_MainPath/"
 # PackagePath
 if [[ "$WRT_ONLY_CONFIG" == 'false' ]]; then
   packagePath="$ZD_ArtifactUploadPath/Package" && mkdir -p "$packagePath"
-  cp -a "$CI_PackagePath/CompressPackage/." "$packagePath/"
+  cp -a "$CI_TempPath/CompressPackage/." "$packagePath/"
 fi
 
 # --------------------------------------------------

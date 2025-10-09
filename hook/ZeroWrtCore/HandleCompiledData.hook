@@ -15,7 +15,7 @@ source "$ZD_ScriptLibPath/createPath.sh"
 [[ -z "$ZeroDream_Secret" ]] && exit 2
 
 # ParseZeroWrtPackage
-outputPath="$CI_PackagePath/ParseZeroWrtPackage" && mkdir -p "$outputPath"
+outputPath="$CI_TempPath/ParseZeroWrtPackage" && mkdir -p "$outputPath"
 "$CI_AppPath/ParseZeroWrtPackage-linux-amd64" \
   --dataPath "$WRT_MainPath/bin" \
   --configPath "$CI_ConfigPath/PackageConfig" \
@@ -23,7 +23,7 @@ outputPath="$CI_PackagePath/ParseZeroWrtPackage" && mkdir -p "$outputPath"
 (($? != 0)) && exit 2
 
 # CompressPackage
-compressPath="$CI_PackagePath/CompressPackage" && mkdir -p "$compressPath"
+compressPath="$CI_TempPath/CompressPackage" && mkdir -p "$compressPath"
 [[ -d "$outputPath" ]] || exit 2 # 若路径不存在则终止 Jobs
 cd "$outputPath"
 for packageName in *; do

@@ -11,7 +11,6 @@ source "$ZD_ScriptLibPath/createPath.sh"
 
 # ZeroWrt Environment
 setEnv 'WRT_MODE' 'Package' # ??? Firmware|Package
-setEnv 'CI_PackagePath' "$(createTempPath 'HandlePackage:dir')"
 
 # --------------------------------------------------
 
