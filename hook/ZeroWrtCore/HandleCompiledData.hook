@@ -16,9 +16,9 @@ source "$ZD_ScriptLibPath/createPath.sh"
 
 # ParseZeroWrtPackage
 outputPath="$CI_PackagePath/ParseZeroWrtPackage" && mkdir -p "$outputPath"
-"$ZD_AppPath/ParseZeroWrtPackage-linux-amd64" \
+"$CI_AppPath/ParseZeroWrtPackage-linux-amd64" \
   --dataPath "$WRT_MainPath/bin" \
-  --configPath "$GITHUB_WORKSPACE/config/PackageConfig" \
+  --configPath "$CI_ConfigPath/PackageConfig" \
   --outputPath "$outputPath"
 (($? != 0)) && exit 2
 

@@ -12,7 +12,7 @@ cd "$WRT_MainPath/"
 [[ -z "$ZeroDream_Secret" ]] && exit 2
 
 # 添加 Package 配置
-cat "$GITHUB_WORKSPACE/config/PackageConfig" >>"$WRT_ConfigPath"
+cat "$CI_ConfigPath/PackageConfig" >>"$WRT_ConfigPath"
 
 # --------------------------------------------------
 

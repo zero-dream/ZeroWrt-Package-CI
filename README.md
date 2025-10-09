@@ -20,6 +20,8 @@ config ------- Configuration Directory
 
 script ------ Script Directory
 
+storage ------ Storage Directory
+
 ### Firmware Download
 
 https://github.com/zero-dream/ZeroWrt-Firmware-CI
