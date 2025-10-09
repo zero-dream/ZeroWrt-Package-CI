@@ -111,7 +111,8 @@ jobs:
           source "$ZD_ScriptLibPath/setEnv.sh"
           source "$ZD_ScriptLibPath/createPath.sh"
           setEnv 'CI_Owner' "${GITHUB_REPOSITORY%%/*}"
-          setEnv 'CI_VirtualPath' "$(createTempPath 'ParseConfig:dir')"
+          setEnv 'CI_TempPath' "$(createTempPath 'CiTemp:dir')"
+          setEnv 'CI_VirtualPath' "$(createTempPath 'CiVirtual:dir')"
           setEnv 'WRT_NAME' 'ZeroWrt'
           setEnv 'WRT_MARK' "$CI_Owner"
           setEnv 'WRT_INFO' "${WRT_SOURCE%%/*}"
@@ -266,7 +267,7 @@ jobs:
           # SetEnv
           source "$ZD_ScriptLibPath/setEnv.sh"
           source "$ZD_ScriptLibPath/createPath.sh"
-          setEnv 'WRT_ReleaseBodyPath' "$(createTempPath "ReleaseBody:file")"
+          setEnv 'WRT_ReleaseBodyPath' "$(createTempPath 'WrtReleaseBody:file')"
           # Hook
           source "$ZD_ScriptLibPath/hook.sh"
           hook 'ZeroWrtCore/CollectRelease'
