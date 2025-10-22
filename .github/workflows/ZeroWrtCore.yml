@@ -267,13 +267,13 @@ jobs:
           # SetEnv
           source "$ZD_ScriptLibPath/setEnv.sh"
           source "$ZD_ScriptLibPath/createPath.sh"
-          setEnv 'WRT_ReleaseBodyPath' "$(createTempPath 'WrtReleaseBody:file')"
+          setEnv 'CI_ReleaseBodyPath' "$(createTempPath 'CiReleaseBody:file')"
           # Hook
           source "$ZD_ScriptLibPath/hook.sh"
           hook 'ZeroWrtCore/CollectRelease'
           # UploadReleaseBodyEnv
           echo 'WRT_UploadReleaseBody<<EOF' >>$GITHUB_ENV
-          cat "$WRT_ReleaseBodyPath" >>$GITHUB_ENV
+          cat "$CI_ReleaseBodyPath" >>$GITHUB_ENV
           echo 'EOF' >>$GITHUB_ENV
 
       - name: UploadArtifact
