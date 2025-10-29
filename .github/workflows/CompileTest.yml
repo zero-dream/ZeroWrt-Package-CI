@@ -1,17 +1,34 @@
 # CI 项目
-name: CompileZeroWrt
+name: CompileTest
 
 # CI 权限
 permissions: write-all
 
 # CI 计划
 on:
-  # 自动运行: 每天早上 4 点
-  schedule:
-    - cron: 0 20 * * *
   # 手动运行
   workflow_dispatch:
     inputs:
+      CONFIG:
+        description: 'CONFIG'
+        required: true
+        type: choice
+        default: 'IPQ60XX-WiFi_NO'
+        options:
+          - IPQ60XX-WiFi_NO
+          - IPQ60XX-WiFi_YES
+          - IPQ807X-WiFi_NO
+          - IPQ807X-WiFi_YES
+      SOURCE:
+        description: 'SOURCE'
+        required: true
+        type: string
+        default: 'VIKINGYFY/immortalwrt'
+      BRANCH:
+        description: 'BRANCH'
+        required: true
+        type: string
+        default: 'main'
       ONLY_CONFIG:
         description: '是否仅生成配置'
         required: true
@@ -20,30 +37,24 @@ on:
 
 # CI 任务
 jobs:
-  compile:
-    name: ${{matrix.CONFIG}}
-    # 矩阵
-    strategy:
-      fail-fast: false
-      matrix:
-        CONFIG: [IPQ60XX-WiFi_NO, IPQ60XX-WiFi_YES, IPQ807X-WiFi_NO, IPQ807X-WiFi_YES]
-        SOURCE: [VIKINGYFY/immortalwrt]
-        BRANCH: [main]
-
+  test:
+    name: ${{inputs.CONFIG}}
     # 调用公用编译核心
     uses: ./.github/workflows/ZeroWrtCore.yml
     secrets: inherit
     with:
+      # 测试模式
+      WRT_TEST: true
       # 是否仅生成配置
       WRT_ONLY_CONFIG: ${{inputs.ONLY_CONFIG || false}} # 为自动编译设置默认值
       # 编译配置
-      WRT_CONFIG: ${{matrix.CONFIG}}
+      WRT_CONFIG: ${{inputs.CONFIG}}
       # 源码名称
-      WRT_SOURCE: ${{matrix.SOURCE}}
+      WRT_SOURCE: ${{inputs.SOURCE}}
       # 源码分支
-      WRT_BRANCH: ${{matrix.BRANCH}}
+      WRT_BRANCH: ${{inputs.BRANCH}}
       # 源码链接
-      WRT_REPO: https://github.com/${{matrix.SOURCE}}.git
+      WRT_REPO: https://github.com/${{inputs.SOURCE}}.git
       # 默认主题
       WRT_THEME: argon
       # 默认主机名

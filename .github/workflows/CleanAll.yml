@@ -8,6 +8,14 @@ permissions: write-all
 on:
   # 手动运行
   workflow_dispatch:
+    inputs:
+      CONFIRM:
+        description: '确认是否清理所有数据'
+        required: true
+        type: boolean
+        default: false
+  # 工作流调用
+  workflow_call:
 
 # CI 环境
 env:
@@ -18,6 +26,7 @@ env:
 jobs:
   clean-release:
     name: CleanAll
+    if: ${{inputs.CONFIRM}} == 'true'
     runs-on: ubuntu-latest
     steps:
       - name: CheckoutProject

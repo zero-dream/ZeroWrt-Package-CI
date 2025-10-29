@@ -6,6 +6,9 @@ on:
   # 工作流调用
   workflow_call:
     inputs:
+      WRT_TEST:
+        required: true
+        type: boolean
       WRT_ONLY_CONFIG:
         required: true
         type: boolean
@@ -45,6 +48,7 @@ env:
   # GITHUB ENV
   GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
   # WRT ENV
+  WRT_TEST: ${{inputs.WRT_TEST}}
   WRT_ONLY_CONFIG: ${{inputs.WRT_ONLY_CONFIG}}
   WRT_CONFIG: ${{inputs.WRT_CONFIG}}
   WRT_SOURCE: ${{inputs.WRT_SOURCE}}
@@ -141,7 +145,7 @@ jobs:
 
       - name: CheckCache
         id: check-cache
-        if: env.WRT_ONLY_CONFIG == 'false'
+        if: env.WRT_TEST == 'false' && env.WRT_ONLY_CONFIG == 'false'
         uses: actions/cache@main
         with:
           key: ${{env.WRT_CONFIG}}-${{env.WRT_INFO}}-${{env.WRT_HASH}}
@@ -152,7 +156,7 @@ jobs:
             ${{env.WRT_MainPath}}/staging_dir/tool*
 
       - name: UpdateCache
-        if: env.WRT_ONLY_CONFIG == 'false'
+        if: env.WRT_TEST == 'false' && env.WRT_ONLY_CONFIG == 'false'
         run: |
           if [ -d "$WRT_MainPath/staging_dir" ]; then
             find "$WRT_MainPath/staging_dir" -type d -name "stamp" -not -path "*target*" | while read -r DIR; do
@@ -220,7 +224,7 @@ jobs:
           cd "$WRT_MainPath/"
           make download -j$(nproc) || make download -j1 V=s
 
-      - name: CompileZeroWrt
+      - name: CompileFirmware
         if: env.WRT_ONLY_CONFIG == 'false'
         run: |
           cd "$WRT_MainPath/"
@@ -237,18 +241,17 @@ jobs:
           du -h --max-depth=1
           echo "===================="
 
-      - name: SetZeroWrtEnv
-        if: env.WRT_ONLY_CONFIG == 'false'
+      - name: SetCompileEnv
         run: |
           cd "$WRT_MainPath/"
           echo "WRT_KVER=$(find "$WRT_MainPath/bin/targets/" -type f -name "*.manifest" -exec grep -oP '^kernel - \K[\d\.]+' {} \;)" >>$GITHUB_ENV
           echo "WRT_LIST=$(find "$WRT_MainPath/bin/targets/" -type f -name "*.manifest" -exec grep -oP '^luci-(app|theme)[^ ]*' {} \; | tr '\n' ' ')" >>$GITHUB_ENV
 
-      - name: HandleCompiledData
+      - name: HandleData
         run: |
           # Hook
           source "$ZD_ScriptLibPath/hook.sh"
-          hook 'ZeroWrtCore/HandleCompiledData'
+          hook 'ZeroWrtCore/HandleData'
         env:
           ZeroDream_Secret: ${{secrets.ZERODREAM_SECRET}}
 
@@ -284,7 +287,7 @@ jobs:
           retention-days: 1 # 保留附件天数，最大值为 90 天
 
       - name: UploadRelease
-        if: env.WRT_ONLY_CONFIG == 'false'
+        if: env.WRT_TEST == 'false' && env.WRT_ONLY_CONFIG == 'false'
         uses: softprops/action-gh-release@master
         with:
           tag_name: ${{env.WRT_NAME}}-Firmware-${{env.WRT_CONFIG}}-${{env.ZD_DATE}}
