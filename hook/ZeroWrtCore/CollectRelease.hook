@@ -5,18 +5,29 @@
 
 cd "$WRT_MainPath/"
 
-[[ "$WRT_ONLY_CONFIG" == 'true' ]] && exit 0
-
 # --------------------------------------------------
 
+# CheckExit
+[[ "$WRT_ONLY_CONFIG" == 'true' ]] && exit 0
+
+# CollectPath
+collectPath="$ZD_ReleaseUploadPath"
+if [[ "$WRT_TEST" == 'true' ]]; then
+  releasePath="$ZD_ArtifactUploadPath/Release" && mkdir -p "$releasePath"
+  collectPath="$releasePath"
+fi
+
 # CollectRelease
-cp -f "$WRT_ConfigPath" "$ZD_ReleaseUploadPath/$WRT_NAME-Config-$WRT_CONFIG-$ZD_DATE"
-tar -czvf "$ZD_ReleaseUploadPath/$WRT_NAME-OpenwrtBin-$WRT_CONFIG-$ZD_DATE.tar.gz" \
+cp -f "$WRT_ConfigPath" "$collectPath/$WRT_NAME-Config-$WRT_CONFIG-$ZD_DATE"
+tar -czvf "$collectPath/$WRT_NAME-OpenwrtBin-$WRT_CONFIG-$ZD_DATE.tar.gz" \
   --exclude='*.bin' \
   --exclude='*.ubi' \
   -C "$WRT_MainPath" \
   'bin'
-cp -a "$CI_TempPath/CompressPackage/." "$ZD_ReleaseUploadPath/"
+cp -a "$CI_TempPath/CompressPackage/." "$collectPath/"
+
+# CheckExit
+[[ "$WRT_TEST" == 'true' ]] && exit 0
 
 # ReleaseBody
 cat > "$CI_ReleaseBodyPath" <<- EOF
