@@ -8,6 +8,16 @@ This project includes closed-source applications
 
 The forked repository cannot be compiled correctly
 
+### Firmware Download
+
+https://github.com/zero-dream/ZeroWrt-Firmware-CI
+
+### Reference Projects
+
+https://github.com/VIKINGYFY/OpenWRT-CI
+
+https://github.com/davidtall/OpenWRT-CI
+
 ### Directory Description
 
 zerodream ------ ZeroDream-CI Private Directory
@@ -21,13 +31,3 @@ config ------- Configuration Directory
 script ------ Script Directory
 
 storage ------ Storage Directory
-
-### Firmware Download
-
-https://github.com/zero-dream/ZeroWrt-Firmware-CI
-
-### Reference Projects
-
-https://github.com/VIKINGYFY/OpenWRT-CI
-
-https://github.com/davidtall/OpenWRT-CI
