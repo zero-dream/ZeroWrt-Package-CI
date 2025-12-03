@@ -1,5 +1,5 @@
 # CI 项目
-name: CleanCache
+name: clean-cache
 
 # CI 权限
 permissions: write-all
@@ -22,7 +22,7 @@ env:
 # CI 任务
 jobs:
   clean-cache:
-    name: CleanCache
+    name: clean-cache
     runs-on: ubuntu-latest
     steps:
       - name: CheckoutProject

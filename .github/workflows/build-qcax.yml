@@ -1,5 +1,5 @@
 # CI 项目
-name: CompileQcax
+name: build-qcax
 
 # CI 权限
 permissions: write-all
@@ -20,18 +20,25 @@ on:
 
 # CI 任务
 jobs:
-  compile:
+  build:
     name: ${{matrix.CONFIG}}
     # 矩阵
     strategy:
       fail-fast: false
       matrix:
-        CONFIG: [IPQ60XX-WiFi_NO, IPQ60XX-WiFi_YES, IPQ807X-WiFi_NO, IPQ807X-WiFi_YES]
+        CONFIG: [
+          IPQ50XX-WiFi_NO,
+          IPQ50XX-WiFi_YES,
+          IPQ60XX-WiFi_NO,
+          IPQ60XX-WiFi_YES,
+          IPQ807X-WiFi_NO,
+          IPQ807X-WiFi_YES,
+        ]
         SOURCE: [VIKINGYFY/immortalwrt]
         BRANCH: [main]
 
     # 调用公用编译核心
-    uses: ./.github/workflows/ZeroWrtCore.yml
+    uses: ./.github/workflows/zerowrt-core.yml
     secrets: inherit
     with:
       # 测试模式
@@ -60,7 +67,7 @@ jobs:
       WRT_PW: 无
 
   clean:
-    name: CleanRelease
+    name: clean-release
     if: ${{inputs.ONLY_CONFIG}} == 'false'
-    needs: [compile]
-    uses: ./.github/workflows/CleanRelease.yml
+    needs: [build]
+    uses: ./.github/workflows/clean-release.yml

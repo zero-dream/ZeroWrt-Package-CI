@@ -1,5 +1,5 @@
 # CI 项目
-name: ZeroWrtCore
+name: zerowrt-core
 
 # CI 计划
 on:
